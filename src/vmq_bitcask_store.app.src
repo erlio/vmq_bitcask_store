@@ -1,0 +1,21 @@
+{application, vmq_bitcask_store,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { vmq_bitcask_store_app, []}},
+  {env, [
+        {vmq_plugin_hooks, [
+            {msg_store_delete_sync, vmq_bitcask_store, delete_sync, 1},
+            {msg_store_delete_async, vmq_bitcask_store, delete_async, 1},
+            {msg_store_write_sync, vmq_bitcask_store, write_sync, 2},
+            {msg_store_write_async, vmq_bitcask_store, write_async, 2},
+            {msg_store_read, vmq_bitcask_store, read, 1},
+            {msg_store_fold, vmq_bitcask_store, fold, 2}
+        ]}
+    ]}
+ ]}.

@@ -1,0 +1,30 @@
+%%-*- mode: erlang -*
+%% ex: ft=erlang
+
+%% @doc This option controls which msg store backend is used. Per default the 
+%% bitcask backend is used, which saves every update to disk. If the bitcask
+%% backend is disabled ('off') the messages are stored in memory.
+{mapping, "msg_store.bitcask_backend", "vmq_bitcask_store.msg_store", [
+                                                    {default, on},
+                                                    {datatype, flag}
+                                                   ]}.
+
+{mapping, "msg_store.bitcask_backend.directory", "vmq_bitcask_store.msg_store", [
+                                                    {default, "{{platform_data_dir}}/msgstore"},
+                                                    {datatype, directory}
+                                                   ]}.
+
+{translation, "vmq_bitcask_store.msg_store", 
+ fun(Conf) ->
+         UseBitCask = cuttlefish:conf_get("msg_store.bitcask_backend", Conf),
+         case UseBitCask of
+             true ->
+                 case cuttlefish:conf_get("msg_store.bitcask_backend.directory", Conf) of
+                     "." -> {vmq_bitcask_store, []};
+                     Dir -> {vmq_bitcask_store, [Dir]}
+                 end;
+             false  ->
+                 {vmq_null_store, []}
+         end
+ end}.
+
