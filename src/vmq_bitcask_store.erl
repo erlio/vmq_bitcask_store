@@ -15,15 +15,16 @@
 -module(vmq_bitcask_store).
 
 -behaviour(gen_server).
+-behaviour(msg_store_plugin).
 
 %% API
 -export([start_link/1,
-         write_sync/2,
-         write_async/2,
-         delete_sync/1,
-         delete_async/1,
-         read/1,
-         fold/2]).
+         msg_store_write_sync/2,
+         msg_store_write_async/2,
+         msg_store_delete_sync/1,
+         msg_store_delete_async/1,
+         msg_store_read/1,
+         msg_store_fold/2]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -41,22 +42,22 @@
 start_link(Id) ->
     gen_server:start_link(?MODULE, [Id], []).
 
-write_sync(Key, Val) ->
+msg_store_write_sync(Key, Val) ->
     call(Key, {write, Key, Val}).
 
-write_async(Key, Val) ->
+msg_store_write_async(Key, Val) ->
     cast(Key, {write, Key, Val}).
 
-delete_sync(Key) ->
+msg_store_delete_sync(Key) ->
    call(Key, {delete, Key}).
 
-delete_async(Key) ->
+msg_store_delete_async(Key) ->
     cast(Key, {delete, Key}).
 
-read(Key) ->
+msg_store_read(Key) ->
     call(Key, {read, Key}).
 
-fold(Fun, Acc) ->
+msg_store_fold(Fun, Acc) ->
     [Coordinator|_] = Pids = vmq_bitcask_store_sup:get_bucket_pids(),
     gen_server:call(Coordinator, {coordinate_fold, Fun, Acc, Pids}, infinity).
 
